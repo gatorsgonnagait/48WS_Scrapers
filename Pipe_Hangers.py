@@ -1,12 +1,8 @@
 import Scraping_Tools as st
 from bs4 import BeautifulSoup
 import re
-import urllib.request
-import bs4
-import requests
 from selenium import webdriver
-from selenium.webdriver.support.wait import WebDriverWait
-import time
+
 #url = 'http://www.pipehangers.com/'
 #store_url = 'https://storefront.pipehangers.com/storefrontCommerce/categorybrowse.do?category-name=Pipe+Attachments&path=&currentPage=1&numResults=10&expanded=
 ext = '/storefrontCommerce/'
@@ -50,67 +46,84 @@ for k, j in enumerate(soup.find_all('div', {'id':re.compile(r'^withsubcategories
         if k == 0 and c == 0:
             driver.find_element_by_class_name('numberItemsPerPage').find_elements_by_tag_name('a')[1].click()
             print('50 items per page')
-            #break
+
 
         sub_page2 = driver.page_source
         sub_soup2 = BeautifulSoup(sub_page2, "html.parser")
 
 
-
-
         while sub_soup2.find('div', {'class':'itemListNavPagination'}):
 
             items_left = sub_soup2.find('div', {'class': 'numberOfShowingResults'}).text.split()
-            print(items_left[3], items_left[5])
+            #print(items_left[3], items_left[5])
 
+            #
+            for m, pic in zip(sub_soup2.find_all('td', {'name': re.compile(r'^itm_numlink')}), sub_soup2.find_all('td', {'name': re.compile(r'^itemthumbnail')}) ):
+                # if not  m.attrs['name']:
+                #     print('no name')
+                #     continue
+                #print(pic.find('a').find('img'))
+                num_link = m.attrs['name']
+                print(num_link)
+                if driver.find_element_by_name(num_link):
 
-            for m in sub_soup2.find_all('td', {'name': re.compile(r'^itm_numlink')}):
-                if not m.attrs['name']:
-                    continue
+                    if pic.find('img').attrs['src'] == '/storefrontCommerce/imageContent.do?contentKey=noimage&size=THUMBNAIL':
+                        print('no image, break')
+                        sku = m.find('a').text
+                        print(sku)
+                        item_no = num_link.rsplit('k', 1)[1]
+                        print(item_no)
+                        name = sub_soup2.find('td', {'name': 'itm_proddesc'+item_no}).text
+                        print(name)
+                        product_df.at[sku, 'SKU #'] = sku
+                        product_df.at[sku, 'Product Name'] = name
+                        #product_df.at[sku, 'Description'] = desc
+                        product_df.at[sku, 'Image'] = '/storefrontCommerce/imageContent.do?contentKey=noimage&size=THUMBNAIL'
+                        product_df.at[sku, '48WS Category'] = sub_cat
+                        #breakpoint()
+                        continue
 
-                name = m.attrs['name']
+                    driver.find_element_by_name(num_link).click()
+                    driver.refresh()
 
-                #print(name)
+                    page3 = driver.page_source
+                    sub_soup3 = BeautifulSoup(page3, "html.parser")
+                    image = ''
+                    if sub_soup3.find('div', {'id':'itemDetailContainer'}):
+                        image = sub_soup3.find('div', {'id':'itemDetailContainer'}).find('img').attrs['src']
+                        image = store_url + ext + image
+                    #print(image)
+                    description = ''
+                    if sub_soup3.find('td', {'colspan':'15'}):
+                        description = st.clear_extra_spaces(sub_soup3.find('td', {'colspan':'15'}).text)
+                        #print(description)
+                    table = sub_soup3.find('table')
 
-                driver.find_element_by_name(name).click()
-                driver.refresh()
+                    item_li = [row.text for row in table.find_all('td')[:2]]
+                    print(item_li[1])
+                    sku = item_li[0]
+                    product_df.at[sku, 'SKU #'] = sku
+                    product_df.at[sku, 'Product Name'] = item_li[1]
+                    product_df.at[sku, 'Description'] = description
+                    product_df.at[sku, 'Image'] = image
+                    product_df.at[sku, '48WS Category'] = sub_cat
 
-                page3 = driver.page_source
-                sub_soup3 = BeautifulSoup(page3, "html.parser")
-                image = ''
-                if sub_soup3.find('div', {'id':'itemDetailContainer'}):
-                    image = sub_soup3.find('div', {'id':'itemDetailContainer'}).find('img').attrs['src']
-                    image = store_url + ext + image
-                #print(image)
-                description = ''
-                if sub_soup3.find('td', {'colspan':'15'}):
-                    description = st.clear_extra_spaces(sub_soup3.find('td', {'colspan':'15'}).text)
-                    #print(description)
-                table = sub_soup3.find('table')
-
-                item_li = [row.text for row in table.find_all('td')[:2]]
-                print(item_li[1])
-                sku = item_li[0]
-                product_df.at[sku, 'SKU #'] = sku
-                product_df.at[sku, 'Product Name'] = item_li[1]
-                product_df.at[sku, 'Description'] = description
-                product_df.at[sku, 'Image'] = image
-                product_df.at[sku, '48WS Category'] = sub_cat
-
-                driver.back()
-                driver.refresh()
-                #break
+                    driver.back()
+                    driver.refresh()
+                    #break
 
 
             if items_left[3] == items_left[5]:
                 break
 
-
-            driver.find_element_by_class_name('itemListNavPagination').find_elements_by_tag_name('a')[-2].click()
+            if int(items_left[5]) - int(items_left[3]) <= 50:
+                driver.find_element_by_class_name('itemListNavPagination').find_elements_by_tag_name('a')[-1].click()
+            else:
+                driver.find_element_by_class_name('itemListNavPagination').find_elements_by_tag_name('a')[-2].click()
 
             print('next page')
 
-            driver.refresh()
+            #driver.refresh()
             sub_page2 = driver.page_source
             sub_soup2 = BeautifulSoup(sub_page2, "html.parser")
 
