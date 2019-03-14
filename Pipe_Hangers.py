@@ -59,67 +59,70 @@ for k, j in enumerate(soup.find_all('div', {'id':re.compile(r'^withsubcategories
 
             #
             for m, pic in zip(sub_soup2.find_all('td', {'name': re.compile(r'^itm_numlink')}), sub_soup2.find_all('td', {'name': re.compile(r'^itemthumbnail')}) ):
-                # if not  m.attrs['name']:
-                #     print('no name')
-                #     continue
-                #print(pic.find('a').find('img'))
+
                 num_link = m.attrs['name']
                 print(num_link)
-                if driver.find_element_by_name(num_link):
+                try:
+                    if driver.find_element_by_name(num_link):
 
-                    if pic.find('img').attrs['src'] == '/storefrontCommerce/imageContent.do?contentKey=noimage&size=THUMBNAIL':
-                        print('no image, break')
-                        sku = m.find('a').text
-                        print(sku)
-                        item_no = num_link.rsplit('k', 1)[1]
-                        print(item_no)
-                        name = sub_soup2.find('td', {'name': 'itm_proddesc'+item_no}).text
-                        print(name)
+                        if pic.find('img').attrs['src'] == '/storefrontCommerce/imageContent.do?contentKey=noimage&size=THUMBNAIL':
+                            print('no image, break')
+                            sku = m.find('a').text
+                            print(sku)
+                            item_no = num_link.rsplit('k', 1)[1]
+                            print(item_no)
+                            name = sub_soup2.find('td', {'name': 'itm_proddesc'+item_no}).text
+                            print(name)
+                            product_df.at[sku, 'SKU #'] = sku
+                            product_df.at[sku, 'Product Name'] = name
+                            product_df.at[sku, 'Image'] = '/storefrontCommerce/imageContent.do?contentKey=noimage&size=THUMBNAIL'
+                            product_df.at[sku, '48WS Category'] = sub_cat
+                            #breakpoint()
+                            continue
+
+                        driver.find_element_by_name(num_link).click()
+                        driver.refresh()
+
+                        page3 = driver.page_source
+                        sub_soup3 = BeautifulSoup(page3, "html.parser")
+                        image = ''
+                        if sub_soup3.find('div', {'id':'itemDetailContainer'}):
+                            image = sub_soup3.find('div', {'id':'itemDetailContainer'}).find('img').attrs['src']
+                            image = store_url + ext + image
+                        #print(image)
+                        description = ''
+                        if sub_soup3.find('td', {'colspan':'15'}):
+                            description = st.clear_extra_spaces(sub_soup3.find('td', {'colspan':'15'}).text)
+                            #print(description)
+                        table = sub_soup3.find('table')
+
+                        item_li = [row.text for row in table.find_all('td')[:2]]
+                        print(item_li[1])
+                        sku = item_li[0]
                         product_df.at[sku, 'SKU #'] = sku
-                        product_df.at[sku, 'Product Name'] = name
-                        #product_df.at[sku, 'Description'] = desc
-                        product_df.at[sku, 'Image'] = '/storefrontCommerce/imageContent.do?contentKey=noimage&size=THUMBNAIL'
+                        product_df.at[sku, 'Product Name'] = item_li[1]
+                        product_df.at[sku, 'Description'] = description
+                        product_df.at[sku, 'Image'] = image
                         product_df.at[sku, '48WS Category'] = sub_cat
-                        #breakpoint()
-                        continue
 
-                    driver.find_element_by_name(num_link).click()
-                    driver.refresh()
+                        driver.back()
+                        driver.refresh()
+                except:
+                    pass
 
-                    page3 = driver.page_source
-                    sub_soup3 = BeautifulSoup(page3, "html.parser")
-                    image = ''
-                    if sub_soup3.find('div', {'id':'itemDetailContainer'}):
-                        image = sub_soup3.find('div', {'id':'itemDetailContainer'}).find('img').attrs['src']
-                        image = store_url + ext + image
-                    #print(image)
-                    description = ''
-                    if sub_soup3.find('td', {'colspan':'15'}):
-                        description = st.clear_extra_spaces(sub_soup3.find('td', {'colspan':'15'}).text)
-                        #print(description)
-                    table = sub_soup3.find('table')
-
-                    item_li = [row.text for row in table.find_all('td')[:2]]
-                    print(item_li[1])
-                    sku = item_li[0]
-                    product_df.at[sku, 'SKU #'] = sku
-                    product_df.at[sku, 'Product Name'] = item_li[1]
-                    product_df.at[sku, 'Description'] = description
-                    product_df.at[sku, 'Image'] = image
-                    product_df.at[sku, '48WS Category'] = sub_cat
-
-                    driver.back()
-                    driver.refresh()
                     #break
 
 
             if items_left[3] == items_left[5]:
                 break
 
-            if int(items_left[5]) - int(items_left[3]) <= 50:
-                driver.find_element_by_class_name('itemListNavPagination').find_elements_by_tag_name('a')[-1].click()
-            else:
-                driver.find_element_by_class_name('itemListNavPagination').find_elements_by_tag_name('a')[-2].click()
+            try:
+                if int(items_left[5]) - int(items_left[3]) <= 50:
+                    driver.find_element_by_class_name('itemListNavPagination').find_elements_by_tag_name('a')[-1].click()
+                else:
+                    driver.find_element_by_class_name('itemListNavPagination').find_elements_by_tag_name('a')[-2].click()
+            except:
+                break
 
             print('next page')
 
