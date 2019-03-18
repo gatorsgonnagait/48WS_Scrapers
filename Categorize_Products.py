@@ -167,8 +167,8 @@ if __name__ == '__main__':
     #company = 'XL_Screw'
     #company = 'PhD_Manufacturing'
     #company = 'US_Wire_and_Cable'
-    company = 'Ajax Springs'
-
+    #company = 'Ajax Springs'
+    company = 'Pipe Hangers'
     company = st.add_underscores(company)
     company = st.clean_punctuation(company)
 
@@ -192,8 +192,8 @@ if __name__ == '__main__':
                           'connector':'connector', 'cap':'cap', 'handles':'welding torch handles', 'cutting':'Cutting Attachments', 'polycarbonate':'carbon steel',
                           'valve':'valves', 'caps':'caps', 'alloy':'Industrial Raw Materials', 'plug':'plug', 'adaptor':'adapters', 'adapter':'adapters',
                           'liner':'form liner', 'dura':'Welding Protection', 'fasteners':'fasteners anchors', 'anchors':'anchors', 'bolt':'bolt', 'lockwashers':'washer',
-                          'cord':'cordage'}
-
+                          'cord':'cordage', 'imsul':'insulation', 'mount':'mounting base', 'restrain':'fitting restraints', 'firestop':'firestop accessories',
+                          'channel':'strut channel', 'clevis': 'clevis fittings', 'seal':'sealer', 'roof':'roofing and siding'}
 
     cat_dict, gc = build_categories_dic(categories_48ws)
     gc_2 =  {**gc, **generic_categories}

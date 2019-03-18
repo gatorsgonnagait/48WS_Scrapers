@@ -8,20 +8,30 @@ from bs4 import BeautifulSoup
 import urllib.request
 import os
 
+
+def clean_image_name(img_url, forward_slash_pos):
+    file_name = img_url.rsplit('/', forward_slash_pos)[1]  # split once from right by forward slash, then take 2nd item in list, which is everything after /
+    ext = file_name.rsplit('.', 1)[1]
+    file_name = file_name.rsplit('.', 1)[0]
+
+    if ext == '.gif' or not ext:
+        ext = ".jpg"
+
+    if ext != 'jpg' and ext != 'jpeg' and ext != 'png':
+        file_name = clean_punctuation(file_name + ext) + '.jpg'
+    else:
+        file_name = clean_punctuation(file_name) + '.' + ext
+
+    return file_name
+
+
 def download_image(directory, img_url, forward_slash_pos):
+    file_name = clean_image_name(img_url, forward_slash_pos)
+
     if img_url:
-        file_name = img_url.rsplit('/', forward_slash_pos)[1] #split once from right by forward slash, then take 2nd item in list, which is everything after /
-        ext = file_name.rsplit('.', 1)[1]
-        file_name = file_name.rsplit('.', 1)[0]
-
-        if ext =='.gif':
-            ext = ".jpg"
-        print(file_name+'.'+ext)
-        file_name+='.'+ext
-        #file_name = clean_punctuation(file_name)+'.'+ext
         picture_request = requests.get(img_url)
-        if picture_request.status_code == 200:
 
+        if picture_request.status_code == 200:
             with open(directory+'images'+ path.sep+file_name, 'wb') as f:
                 f.write(picture_request.content)
         return file_name
@@ -97,6 +107,14 @@ def clean_words(word):
         w = w[:-1]
     elif w[-3:] == 'ing':
         w = w[:-3]
+    elif w[:5] == 'insul':
+        w = 'insul'
+    elif w[:8] == 'restrain':
+        w = 'restrain'
+    elif w[:5] == 'mount':
+        w = 'mount'
+    elif w[:4] == 'roof':
+        w = 'roof'
     return w
 
 

@@ -1,11 +1,7 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
-
 import Scraping_Tools as st
-import time
 import pandas as pd
-
-
 
 
 #trying to scrape categores from vault

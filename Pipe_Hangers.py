@@ -1,12 +1,8 @@
 import Scraping_Tools as st
 from bs4 import BeautifulSoup
 import re
-import urllib.request
-import bs4
-import requests
 from selenium import webdriver
-from selenium.webdriver.support.wait import WebDriverWait
-import time
+
 #url = 'http://www.pipehangers.com/'
 #store_url = 'https://storefront.pipehangers.com/storefrontCommerce/categorybrowse.do?category-name=Pipe+Attachments&path=&currentPage=1&numResults=10&expanded=
 ext = '/storefrontCommerce/'
@@ -21,8 +17,6 @@ company = st.add_underscores(manufacturer)
 product_df = st.create_product_df()
 
 driver.get(store_url)
-            #time.sleep(3)
-
 
 
 page = driver.page_source
@@ -50,7 +44,7 @@ for k, j in enumerate(soup.find_all('div', {'id':re.compile(r'^withsubcategories
         if k == 0 and c == 0:
             driver.find_element_by_class_name('numberItemsPerPage').find_elements_by_tag_name('a')[1].click()
             print('50 items per page')
-            #break
+
 
         sub_page2 = driver.page_source
         sub_soup2 = BeautifulSoup(sub_page2, "html.parser")
