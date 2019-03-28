@@ -55,6 +55,13 @@ def clean_dictionary(dict):
 
     return gc_2
 
+def clean_string(str):
+
+    k2 = ''
+    for word in str.split():
+        k2 += st.clean_words(word) + ' '
+
+    return k2[:-1]
 
 def pick_most_relevant_category(item_line, cat_dict, generic_categories):
     generic_key = ''
@@ -168,7 +175,9 @@ if __name__ == '__main__':
     #company = 'PhD_Manufacturing'
     #company = 'US_Wire_and_Cable'
     #company = 'Ajax Springs'
-    company = 'Pipe Hangers'
+    #company = 'Pipe Hangers'
+    #company = 'Inweld'
+    company = 'Pipe Tytes'
     company = st.add_underscores(company)
     company = st.clean_punctuation(company)
 
@@ -201,4 +210,4 @@ if __name__ == '__main__':
 
     company_products = categorize_items(company_products, cat_dict, gc_2, pre_categorized=True)
     #
-    company_products.to_excel(company + path.sep + company + '_products_with_categories.xlsx', index=False)
+    company_products.to_excel(company + path.sep + company + '_products_with_categorie.xlsx', index=False)

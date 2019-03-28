@@ -14,8 +14,8 @@ def clean_image_name(img_url, forward_slash_pos):
     ext = file_name.rsplit('.', 1)[1]
     file_name = file_name.rsplit('.', 1)[0]
 
-    if ext == '.gif' or not ext:
-        ext = ".jpg"
+    if ext == 'gif' or not ext:
+        ext = "jpg"
 
     if ext != 'jpg' and ext != 'jpeg' and ext != 'png':
         file_name = clean_punctuation(file_name + ext) + '.jpg'
@@ -156,6 +156,7 @@ def clear_extra_spaces(str):
     str2 = str.lstrip()
     str2 = str2.rstrip()
     return re.sub(' +', ' ', str2)
+
 
 def add_underscores(str):
     return str.replace(' ', '_')

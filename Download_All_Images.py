@@ -7,22 +7,22 @@ import numpy as np
 #company = 'XL Screw'
 #company = 'PhD Manufacturing'
 #company = 'Mule Head'
-company = 'Ingersoll Rand'
+#company = 'Ingersoll Rand'
 #company = 'All Material Handling'
 #company = 'Ajax Springs'
 #company = 'Stelfast'
 #company = 'Pipe Hangers'
-#company = 'Inweld'
+company = 'Inweld'
 
 company = st.add_underscores(company)
 directory = company+os.path.sep
-product_df = pd.read_excel(directory+company+'_products_with_categories.xlsx')
+product_df = pd.read_excel(directory+company+'_products_with_categories_2.xlsx')
 #product_df = pd.read_excel(directory+company+'_products.xlsx')
 img_dict = {}
 last_img_name = ''
 version = 'with_images'
 images_have_same_name = False
-forward_slash_pos = 4
+forward_slash_pos = 1
 alt_forward_slash_pos = 1
 
 
