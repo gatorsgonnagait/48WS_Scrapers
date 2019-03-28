@@ -28,7 +28,8 @@ def find_item_page(item_soup):
     else:
 
         print("reached item list page")
-        for page in item_soup.find_all()
+        for page in item_soup.find_all():
+            pass
         # figure out pagination
         for k in item_soup.find_all('div', {'class':'col-sm-8 col-xs-8 view_product_section'}):
 
