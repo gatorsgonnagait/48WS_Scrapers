@@ -11,7 +11,10 @@ import os
 
 def clean_image_name(img_url, forward_slash_pos):
     file_name = img_url.rsplit('/', forward_slash_pos)[1]  # split once from right by forward slash, then take 2nd item in list, which is everything after /
+    if len(file_name.rsplit('.', 1))==1:
+        return ''
     ext = file_name.rsplit('.', 1)[1]
+
     file_name = file_name.rsplit('.', 1)[0]
 
     if ext == 'gif' or not ext:
@@ -28,13 +31,14 @@ def clean_image_name(img_url, forward_slash_pos):
 def download_image(directory, img_url, forward_slash_pos):
     file_name = clean_image_name(img_url, forward_slash_pos)
 
-    if img_url:
+    if img_url and file_name:
         picture_request = requests.get(img_url)
 
         if picture_request.status_code == 200:
             with open(directory+'images'+ path.sep+file_name, 'wb') as f:
                 f.write(picture_request.content)
         return file_name
+
 
 
 def clean_punctuation(str):
@@ -87,7 +91,9 @@ def clean_adjectives(str):
     clean = clean.replace(' in ', ' ')
     clean = clean.replace(' or ', ' ')
     clean = clean.replace('self', '')
-
+    clean = clean.replace('equipment', '')
+    clean = clean.replace('replacement', '')
+    clean = clean.replace('system', '')
     return clean
 
 def clean_words(word):

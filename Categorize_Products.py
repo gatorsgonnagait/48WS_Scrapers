@@ -1,5 +1,5 @@
 import pandas as pd
-import os.path as path
+import os
 import Scraping_Tools as st
 
 
@@ -132,7 +132,7 @@ def categorize_items(company_products, cat_dict, generic_categories, pre_categor
             company_products.at[p, 'Category'] = str(cat_dict[maximum][4])
             done_already[item_line] = [company_products.at[p, '48WS Category'], company_products.at[p, 'Category'], True]
 
-        elif pre_categorized:
+        elif pre_categorized or not company_products.at[p, 'Category']:
 
             item_line = st.clean_punctuation(company_products.at[p, 'Product Name'])
             item_line = st.clean_adjectives(item_line.lower())
@@ -161,7 +161,7 @@ def categorize_items(company_products, cat_dict, generic_categories, pre_categor
             done_already[item_line] = ['', '',False]
 
         print(name)
-        print(max_value)
+        #print(max_value)
         print()
 
     return company_products
@@ -169,45 +169,49 @@ def categorize_items(company_products, cat_dict, generic_categories, pre_categor
 
 if __name__ == '__main__':
 
-    #company = 'Ingersoll_Rand'
-    #company = 'All_Material_Handling'
-    #company = 'XL_Screw'
-    #company = 'PhD_Manufacturing'
-    #company = 'US_Wire_and_Cable'
-    #company = 'Ajax Springs'
-    #company = 'Pipe Hangers'
-    #company = 'Inweld'
-    company = 'Pipe Tytes'
-    company = st.add_underscores(company)
-    company = st.clean_punctuation(company)
+    #company = 'Magnum Tools'
+    company = input('Enter Company Name: ')
+    answer = input('Are the products categoried alreaady? Enter t or f ')
 
-    company_products = pd.read_excel(company + path.sep + company+'_products.xlsx')
-    company_products = company_products.fillna('')
-    categories_48ws = pd.read_excel('48ws_categories.xlsx')
+    if answer == 't':
+        pre_categorized = True
+    elif answer == 'f':
+        pre_categorized = False
+
+    try:
+        company = st.add_underscores(company)
+        company = st.clean_punctuation(company)
+
+        company_products = pd.read_excel(company + os.path.sep + company+'_products.xlsx')
+        company_products = company_products.fillna('')
+        categories_48ws = pd.read_excel('48ws_categories.xlsx')
 
 
-    generic_categories = {'wrench': 'Combination Wrench', 'screwdriver': 'Screwdriver', 'saw': 'Saw Blade', 'grinder':'Grinders & Accessori', 'trolley': 'Trolley',
-                          'drill':'Drill', 'scaler': 'Needle Scaler', 'nibbler': 'Nibblers & Shear', 'sander':'Orbit and Disc Sander', 'chain': 'Chain', 'clamp': 'Clamp',
-                          'polisher': 'Polishers and Buffer', 'buffer':'Polishers and Buffer', 'engrave': 'Engraver', 'remover':'Polishers and Buffer',
-                          'gasket': 'Engine Oil Drain Plug', 'fitting':'Fitting', 'hose':'Hose', 'lug':'Weld Lug', 'fuel': 'Fuel Transfer Pump Accessori',
-                          'helmet':'Hard Hat', 'cable':'Cable Connector', 'adhesive':'Adhesiv', 'bayonet':'Conduit Connector', 'ferrule': 'Wire Ferrules & Bushing',
-                          'electrode': 'Stick Electrode', 'gouging': 'Stick Electrode', 'torch':'Butane Torches','acetylene':'Butane Torches',
-                          'cylinder':'Portable Air Tank', 'weld':'Gas Welding Equipment', 'regulator': 'air regulator','silver':'Industrial Raw Materials',
-                          'copper':'copper', 'steel':'Alloy Steel', 'Aluminum':'Aluminum', 'Brass':'Brass', 'Bronze':'Bronze', 'Carbon':'Carbon Steel',
-                          'Ceramic':'Ceramic', 'iron':'Cast Iron', 'Cork':'Cork', 'felt':'felt', 'fiberglass':'fiberglass','foam':'foam', 'plastics':'plastics',
-                          'rubber':'rubber', 'tin':'tin','vinyl':'vinyl','stainless':'stainless steel','wire cloth':'wire cloth','conduit':'conduit connector',
-                          'pipe':'plumbing pipe & tubing', 'cup':'welding nozzles', 'flux':'soldering flux', 'mig':'Gas Welding Equipment',
-                          'tig': 'Gas Welding Equipment', 'collet':'collets', 'broco':'Gas Welding Equipment', 'metal':'Alloy Steel', 'dinse':'connector',
-                          'connector':'connector', 'cap':'cap', 'handles':'welding torch handles', 'cutting':'Cutting Attachments', 'polycarbonate':'carbon steel',
-                          'valve':'valves', 'caps':'caps', 'alloy':'Industrial Raw Materials', 'plug':'plug', 'adaptor':'adapters', 'adapter':'adapters',
-                          'liner':'form liner', 'dura':'Welding Protection', 'fasteners':'fasteners anchors', 'anchors':'anchors', 'bolt':'bolt', 'lockwashers':'washer',
-                          'cord':'cordage', 'imsul':'insulation', 'mount':'mounting base', 'restrain':'fitting restraints', 'firestop':'firestop accessories',
-                          'channel':'strut channel', 'clevis': 'clevis fittings', 'seal':'sealer', 'roof':'roofing and siding'}
+        generic_categories = {'wrench': 'Combination Wrench', 'screwdriver': 'Screwdriver', 'saw': 'Saw Blade', 'grinder':'Grinders & Accessori', 'trolley': 'Trolley',
+                              'drill':'Drill', 'scaler': 'Needle Scaler', 'nibbler': 'Nibblers & Shear', 'sander':'Orbit and Disc Sander', 'chain': 'Chain', 'clamp': 'Clamp',
+                              'polisher': 'Polishers and Buffer', 'buffer':'Polishers and Buffer', 'engrave': 'Engraver', 'remover':'Polishers and Buffer',
+                              'gasket': 'Engine Oil Drain Plug', 'fitting':'Fitting', 'hose':'Hose', 'lug':'Weld Lug', 'fuel': 'Fuel Transfer Pump Accessori',
+                              'helmet':'Hard Hat', 'cable':'Cable Connector', 'adhesive':'Adhesiv', 'bayonet':'Conduit Connector', 'ferrule': 'Wire Ferrules & Bushing',
+                              'electrode': 'Stick Electrode', 'gouging': 'Stick Electrode', 'torch':'Butane Torches','acetylene':'Butane Torches',
+                              'cylinder':'Portable Air Tank', 'weld':'Gas Welding Equipment', 'regulator': 'air regulator','silver':'Industrial Raw Materials',
+                              'copper':'copper', 'steel':'Alloy Steel', 'Aluminum':'Aluminum', 'Brass':'Brass', 'Bronze':'Bronze', 'Carbon':'Carbon Steel',
+                              'Ceramic':'Ceramic', 'iron':'Cast Iron', 'Cork':'Cork', 'felt':'felt', 'fiberglass':'fiberglass','foam':'foam', 'plastics':'plastics',
+                              'rubber':'rubber', 'tin':'tin','vinyl':'vinyl','stainless':'stainless steel','wire cloth':'wire cloth','conduit':'conduit connector',
+                              'pipe':'plumbing pipe & tubing', 'cup':'welding nozzles', 'flux':'soldering flux', 'mig':'Gas Welding Equipment',
+                              'tig': 'Gas Welding Equipment', 'collet':'collets', 'broco':'Gas Welding Equipment', 'metal':'Alloy Steel', 'dinse':'connector',
+                              'connector':'connector', 'cap':'cap', 'handles':'welding torch handles', 'cutting':'Cutting Attachments', 'polycarbonate':'carbon steel',
+                              'valve':'valves', 'caps':'caps', 'alloy':'Industrial Raw Materials', 'plug':'plug', 'adaptor':'adapters', 'adapter':'adapters',
+                              'liner':'form liner', 'dura':'Welding Protection', 'fasteners':'fasteners anchors', 'anchors':'anchors', 'bolt':'bolt', 'lockwashers':'washer',
+                              'cord':'cordage', 'imsul':'insulation', 'mount':'mounting base', 'restrain':'fitting restraints', 'firestop':'firestop accessories',
+                              'channel':'strut channel', 'clevis': 'clevis fittings', 'seal':'sealer', 'roof':'roofing and siding', 'brake':'brake tools', 'ladder':'multipurpose ladder',
+                              'gutter':'rain gutters'}
 
-    cat_dict, gc = build_categories_dic(categories_48ws)
-    gc_2 =  {**gc, **generic_categories}
-    gc_2 = clean_dictionary(gc_2)
+        cat_dict, gc = build_categories_dic(categories_48ws)
+        gc_2 =  {**gc, **generic_categories}
+        gc_2 = clean_dictionary(gc_2)
 
-    company_products = categorize_items(company_products, cat_dict, gc_2, pre_categorized=True)
-    #
-    company_products.to_excel(company + path.sep + company + '_products_with_categorie.xlsx', index=False)
+        company_products = categorize_items(company_products, cat_dict, gc_2, pre_categorized=True)
+        company_products.to_excel(company + os.path.sep + company + '_products_with_categories.xlsx', index=False)
+    except:
+        print('Errors detected, try again ')
+        os._exit(1)
